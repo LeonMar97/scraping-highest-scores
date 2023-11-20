@@ -17,7 +17,6 @@ class Title():
         if (other==None and self) or (other and self==None):
             return False
         return self.points<other.points
-    
     def __eq__(self, other: object) -> bool:
         if (other==None and self) or (other and self==None):
             return False
@@ -33,8 +32,10 @@ def get_all_ancors_text(res)->list:
         soup=BeautifulSoup(res.text,'html.parser')
         # ancor_string='tr.athing td.title span.titleline >a'
         ancor_string='tr.athing td.title span.titleline >a'
-        all_anchors = soup.select(f"{ancor_string}")
         all_scors=soup.select('.score')
+        all_score_ids=[(i.attrs['id'].split("_")[1]) for i in all_scors]
+        all_anchors =[i for i in soup.select(f"{ancor_string}")if i.parent.parent.parent.attrs['id'] in all_score_ids ]
+        
         if(len(all_anchors)!=len(all_scors)):
             raise Exception(f'{abs(len(all_anchors)-len(all_scors))} mismatch amount of scores and titles')
         page_titles=[Title(i.text,int(j.text.split(" ")[0])) for (i,j) in zip  (all_anchors,all_scors) ]
@@ -69,7 +70,7 @@ def highest_marked():
             break
 
     title_lst.sort()
-    os.system("cls||clear")
+    # os.system("cls||clear")
     for i,j in enumerate(title_lst[-1:-11:-1]):
         print(f"{i+1}. {j} \n")
     
